@@ -77,7 +77,8 @@ async def pollreply( poll: polling = Body(...)):
         if type(opt) is dict:
             poll_options[opt['text']]['count'] = poll_options[opt['text']]['count'] +1
         else:
-            poll_options[opt] = poll_options[opt]+1
+            print(opt,poll_options)
+            poll_options[opt]['count'] = poll_options[opt]['count']+1
     
     await db['results'].update_one({'pollid':pollid }, {"$set": {"options":poll_options}}, upsert=True)
         
