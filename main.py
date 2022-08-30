@@ -32,7 +32,7 @@ db['browser_collection'].create_index("date", expireAfterSeconds=7200)
 async def pollcreation( poll: Poll = Body(...)):
     polldetail = jsonable_encoder(poll)
     if polldetail['imgtitle']:
-        url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
+        url  = await cloudinary.uploader.upload(polldetail['imgtitle'])['url']
         polldetail['imgtitle'] = url  
 
     if polldetail['options']:
