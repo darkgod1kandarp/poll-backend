@@ -1,4 +1,5 @@
 import os
+from sys import breakpointhook
 from fastapi import FastAPI, Body, HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -26,7 +27,9 @@ cloudinary.config(
 app = FastAPI()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.poll_backend
-db['browser_collection'].create_index("date", expireAfterSeconds=7200)
+# async def browse_colletion():
+#     await db['browser_collection'].create_index("date", expireAfterSeconds=7200)
+
 
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
