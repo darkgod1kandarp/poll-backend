@@ -1,0 +1,3 @@
+user poll  
+    - we get mac address 
+    - we can store the user browsing poll  
