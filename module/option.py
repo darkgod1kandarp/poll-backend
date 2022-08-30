@@ -1,6 +1,5 @@
 from typing import List
 
-from numpy import False_
 
 
 class MultipleOption:
