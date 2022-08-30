@@ -53,35 +53,39 @@ async def pollcreation( poll: Poll = Body(...)):
 
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
+    try:
 
-    polling = jsonable_encoder(poll)
-    polldata = await db['poll'].find_one({"_id": polling['pollid']})
+        polling = jsonable_encoder(poll)
+        polldata = await db['poll'].find_one({"_id": polling['pollid']})
 
-    pollid = polling['pollid']
-    macaddr = polling['macaddr']
-    choice = polling['choices']
-    votingrestiction = polldata['votingrestiction']
+        pollid = polling['pollid']
+        macaddr = polling['macaddr']
+        choice = polling['choices']
+        votingrestiction = polldata['votingrestiction']
 
-    Voting = vote.Vote(db)
+        Voting = vote.Vote(db)
 
-    if not await Voting.check(votingrestiction, pollid, macaddr):
-        return JSONResponse(status_code=400, content="you can't vote right now")
-    
-    result  = await db['results'].find_one({'pollid':pollid})
-    poll_options  =result['options']
-    
-    if not result:
-        return JSONResponse(status_code=402, content="result for this pollid does not exist")
-    
-    for opt in choice:
-        if type(opt) is dict:
-            poll_options[opt['text']]['count'] = poll_options[opt['text']]['count'] +1
-        else:
-            print(opt,poll_options)
-            poll_options[opt]['count'] = poll_options[opt]['count']+1
-    
-    await db['results'].update_one({'pollid':pollid }, {"$set": {"options":poll_options}}, upsert=True)
+        if not await Voting.check(votingrestiction, pollid, macaddr):
+            return JSONResponse(status_code=400, content="you can't vote right now")
         
+        result  = await db['results'].find_one({'pollid':pollid})
+        poll_options  =result['options']
+        
+        if not result:
+            return JSONResponse(status_code=402, content="result for this pollid does not exist")
+        
+        for opt in choice:
+            if type(opt) is dict:
+                poll_options[opt['text']]['count'] = poll_options[opt['text']]['count'] +1
+            else:
+                poll_options[opt]['count'] = poll_options[opt]['count']+1
+        
+        
+        await db['results'].update_one({'pollid':pollid }, {"$set": {"options":poll_options}}, upsert=True)
+    except Exception as e:
+       
+        return JSONResponse(status_code=404, content="not able to do vote ")
+            
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"status":"vote accepted",'data':{'pollid':pollid,"options":poll_options}})
 
