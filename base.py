@@ -71,7 +71,7 @@ class Poll(BaseModel):
     options: Optional[List[str]] = None
     multipleoption: Dict[str, MultipleOption]
     imageoptions: Optional[List[Dict[str, str]]] = None
-    setenddate: Optional[datetime]
+    setenddate: Optional[Union[datetime, bool]]
     allowcomments: bool
     votingrestiction: VotingRestriction
     startnumber: Optional[int] = None
@@ -81,10 +81,8 @@ class Poll(BaseModel):
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
-        if value and value!="" :
-            generator_date = (i for i in map(int, value.split("/")))
-
-            return datetime(next(generator_date), next(generator_date), next(generator_date), next(generator_date), next(generator_date), next(generator_date))
+        if value!="" :
+            return datetime(value)
         else:
             return False
 
