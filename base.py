@@ -71,7 +71,7 @@ class Poll(BaseModel):
     options: Optional[List[str]] = None
     multipleoption: Dict[str, MultipleOption]
     imageoptions: Optional[List[Dict[str, str]]] = None
-    setenddate: datetime
+    setenddate: Optional[datetime]
     allowcomments: bool
     votingrestiction: VotingRestriction
     startnumber: Optional[int] = None
