@@ -91,9 +91,9 @@ async def pollreply( poll: polling = Body(...)):
         
             
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
-        
-        if datetime.now()>polldata['setenddate']:
-            return JSONResponse(status_code=400, content="you can't vote right now")
+        if polldata['setenddate']:
+            if datetime.now()>parser.parse(polldata['setenddate']) :
+                return JSONResponse(status_code=400, content="you can't vote right now")
 
 
         pollid = polling['pollid']
