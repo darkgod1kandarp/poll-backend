@@ -78,6 +78,7 @@ class Poll(BaseModel):
     number: Optional[int] = None
     endnumber: Optional[int] = None
     polltype:PollOption
+    macaddr:str
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
@@ -110,6 +111,10 @@ class Poll(BaseModel):
 
 
 
+# class Comment(BaseModel):
+#     pollid:str 
+    
+
 
 # {
 #   "title": "BJP doing fine work ?",
@@ -133,5 +138,6 @@ class Poll(BaseModel):
 #   "votingrestiction": "One vote browser session",
 #   "allowcomments": false,
 #   "startnumber": 1,
-#   "endnumber": 2
+#   "endnumber": 2,
+#   "pollType":"imagePoll"
 # }

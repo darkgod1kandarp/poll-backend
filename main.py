@@ -12,7 +12,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 import uvicorn
-
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -26,6 +26,21 @@ cloudinary.config(
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000"
+
+]
+    
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
 db = client.poll_backend
 # async def browse_colletion():
@@ -34,21 +49,32 @@ db = client.poll_backend
 
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
-    polldetail = jsonable_encoder(poll)
-    if polldetail['imgtitle']:
-        url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
-        polldetail['imgtitle'] = url  
+    try:
+        polldetail = jsonable_encoder(poll)
+        
+        if polldetail['imgtitle']:
+            url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
+            polldetail['imgtitle'] = url  
 
-    if polldetail['options']:
-        new_poll = await db["poll"].insert_one(polldetail)
-        created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
-        options  ={i:{'count':0} for i in polldetail['options']}
-    else:
-        polldetail['imageoptions'] = [{'text':val['text'], 'image':cloudinary.uploader.upload(val['image'])['url']}  for val in polldetail['imageoptions']]
-        new_poll = await db["poll"].insert_one(polldetail)
-        created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
-        options = {val['text']:{'count':0, 'imageurl':val['image']}  for val in polldetail['imageoptions']}
-    await db['results'].insert_one({'pollid': new_poll.inserted_id,'options':options })
+        if polldetail['options']:
+            new_poll = await db["poll"].insert_one(polldetail)
+            created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
+            options  ={i:{'count':0} for i in polldetail['options']}
+        else:
+            polldetail['imageoptions'] = [{'text':val['text'], 'image':cloudinary.uploader.upload(val['image'])['url']}  for val in polldetail['imageoptions']]
+            new_poll = await db["poll"].insert_one(polldetail)
+            created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
+            options = {val['text']:{'count':0, 'imageurl':val['image']}  for val in polldetail['imageoptions']}
+       
+        await db['results'].insert_one({'pollid': new_poll.inserted_id,'options':options })
+        # print(await db['users'].find_one({'macaddr':polldetail['macaddr'] }))
+        # if not await db['users'].find_one({'macaddr':polldetail['macaddr'] }):
+           
+        #     user_count  = db['users'].count()
+        #     print(user_count)
+    except Exception as e:
+        # print(e)
+        return JSONResponse(status_code=400, content='oops something wrong whle storing data')
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
 
@@ -107,7 +133,10 @@ async def pollreply( poll: polling = Body(...)):
 
 @app.post("/poll/detail/{pollid}", response_description="poll detail",tags = ["poll"])
 async def poll_detail(pollid:str):
+    
     return await db["poll"].find_one({"_id":pollid})
+
+
 
 @app.post("/poll/result/{pollid}", response_description="poll results",tags = ["poll"])
 async def poll_results(pollid:str):
