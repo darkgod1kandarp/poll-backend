@@ -86,10 +86,10 @@ async def pollcreation( poll: Poll = Body(...)):
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
     try:
-        print('qwqwe')
+   
         polling = jsonable_encoder(poll)
         
-        print('wfwerfew')  
+        
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
         if polldata['setenddate']:
             if datetime.now()>parser.parse(polldata['setenddate']) :
@@ -100,7 +100,7 @@ async def pollreply( poll: polling = Body(...)):
         macaddr = polling['macaddr']
         choice = polling['choices']
         votingrestiction = polldata['votingrestiction']
-        print('qwfewqf')
+        
         Voting = vote.Vote(db)
 
         if not await Voting.check(votingrestiction, pollid, macaddr):
@@ -152,10 +152,24 @@ async def poll_detail(pollid:str):
 
 @app.post("/poll/result/{pollid}", response_description="poll results",tags = ["poll"])
 async def poll_results(pollid:str):
-    val  = await db["results"].find_one({"pollid":pollid})
-    if val:
-        del val['_id']
-    return val
+    result  = await db["results"].find_one({"pollid":pollid})
+    poll_options  =result['options']
+        
+    if not result:
+        return JSONResponse(status_code=402, content="result for this pollid does not exist")
+    
+    result_val  = []
+    total_votes  =  0
+       
+    for val in poll_options:
+        total_votes+=poll_options[val]['count']
+        if poll_options[val].get('imageurl')!=None:
+            result_val.append({'text':val, 'count':poll_options[val]['count'], 'image':poll_options[val]['imageurl']})
+        else:
+            result_val.append({'text':val, 'count':poll_options[val]['count']})
+
+    return JSONResponse(status_code=200, content={'data':{"totalcount":total_votes , "result_val":result_val}})
+
 
 
 if __name__=="__main__":
