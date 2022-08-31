@@ -53,8 +53,9 @@ db = client.poll_backend
 async def pollcreation( poll: Poll = Body(...)):
     try:
         polldetail = jsonable_encoder(poll) 
+        if  polldetail ['setenddate']<=datetime.now():
+            return JSONResponse(status_code=404, content='please provide date after current date')
 
-       
         if polldetail['imgtitle']:
             url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
             polldetail['imgtitle'] = url  
@@ -85,7 +86,10 @@ async def pollcreation( poll: Poll = Body(...)):
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
     try:
+        
         polling = jsonable_encoder(poll)
+        
+            
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
 
         pollid = polling['pollid']
