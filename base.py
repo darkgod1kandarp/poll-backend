@@ -81,6 +81,7 @@ class Poll(BaseModel):
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
+        print(value)
         if value !="":
             generator_date = (i for i in map(int, value.split("/")))
 
