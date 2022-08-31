@@ -54,8 +54,8 @@ async def pollcreation( poll: Poll = Body(...)):
     try:
         polldetail = jsonable_encoder(poll) 
      
-        if  parser.parse(polldetail ['setenddate'])<=datetime.now():
-            return JSONResponse(status_code=404, content='please provide date after current date')
+        # if  parser.parse(polldetail ['setenddate'])<=datetime.now() and polldetail ['setenddate']:
+        #     return JSONResponse(status_code=404, content='please provide date after current date')
 
         if polldetail['imgtitle']:
             url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
