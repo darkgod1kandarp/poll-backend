@@ -78,7 +78,6 @@ class Poll(BaseModel):
     number: Optional[int] = None
     endnumber: Optional[int] = None
     polltype:PollOption
-    macaddr:str
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
