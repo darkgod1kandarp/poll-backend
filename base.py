@@ -24,6 +24,9 @@ class MultipleOption(str, Enum):
     one = "unlimited"
     two = "range"
     three = "None"
+class PollOption(str, Enum):
+    one  =  "multipleOption"
+    two  =  "imagePoll"
 
 
 class PyObjectId(ObjectId):
@@ -74,6 +77,7 @@ class Poll(BaseModel):
     startnumber: Optional[int] = None
     number: Optional[int] = None
     endnumber: Optional[int] = None
+    polltype:PollOption
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
@@ -98,7 +102,8 @@ class Poll(BaseModel):
                 "votingrestiction": "One vote browser session",
                 "allowcomments": False,
                 "startnumber": 1,
-                "endnumber": 3
+                "endnumber": 3,
+                "polltype":"multipleOption"
 
             }
         }
