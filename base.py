@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel, Field, EmailStr, validator
 from bson import ObjectId
 from typing import Dict, List, Union
@@ -71,7 +72,7 @@ class Poll(BaseModel):
     options: Optional[List[str]] = None
     multipleoption: Dict[str, MultipleOption]
     imageoptions: Optional[List[Dict[str, str]]] = None
-    setenddate: Optional[Union[datetime, bool]]
+    setenddate: Union[ bool, datetime]
     allowcomments: bool
     votingrestiction: VotingRestriction
     startnumber: Optional[int] = None
@@ -81,7 +82,9 @@ class Poll(BaseModel):
 
     @validator("setenddate", pre=True)
     def parse_setenddate(cls, value):
-        if value!="" :
+       
+        if value :
+           
             return datetime(value)
         else:
             return False

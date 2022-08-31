@@ -1,3 +1,4 @@
+from datetime import datetime
 from itertools import count
 import os
 from sys import breakpointhook
@@ -13,6 +14,7 @@ import cloudinary.uploader
 import cloudinary.api
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 
 load_dotenv()
 
@@ -50,13 +52,15 @@ db = client.poll_backend
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
     try:
-        polldetail = jsonable_encoder(poll)
-        
+        polldetail = jsonable_encoder(poll) 
+
+       
         if polldetail['imgtitle']:
             url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
             polldetail['imgtitle'] = url  
 
         if polldetail['options']:
+            print(polldetail)
             new_poll = await db["poll"].insert_one(polldetail)
             created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
             options  ={i:{'count':0} for i in polldetail['options']}
