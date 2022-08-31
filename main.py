@@ -78,8 +78,8 @@ async def pollcreation( poll: Poll = Body(...)):
         #     user_count  = db['users'].count()
         #     print(user_count)
     except Exception as e:
-        print(e)
-        return JSONResponse(status_code=400, content='oops something wrong whle storing data')
+      
+        return JSONResponse(status_code=400, content=e)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
 
