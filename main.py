@@ -15,7 +15,7 @@ import cloudinary.api
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-
+from dateutil import parser
 load_dotenv()
 
 cloudinary.config( 
@@ -53,7 +53,8 @@ db = client.poll_backend
 async def pollcreation( poll: Poll = Body(...)):
     try:
         polldetail = jsonable_encoder(poll) 
-        if  polldetail ['setenddate']<=datetime.now():
+     
+        if  parser.parse(polldetail ['setenddate'])<=datetime.now():
             return JSONResponse(status_code=404, content='please provide date after current date')
 
         if polldetail['imgtitle']:
@@ -78,7 +79,7 @@ async def pollcreation( poll: Poll = Body(...)):
         #     user_count  = db['users'].count()
         #     print(user_count)
     except Exception as e:
-        # print(e)
+        print(e)
         return JSONResponse(status_code=400, content='oops something wrong whle storing data')
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
