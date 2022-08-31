@@ -2,6 +2,7 @@ from datetime import datetime
 from itertools import count
 import os
 from sys import breakpointhook
+from urllib import response
 from fastapi import FastAPI, Body, HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -31,7 +32,8 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://jovial-starlight-48bf83.netlify.app"
+    "https://jovial-starlight-48bf83.netlify.app",
+    "https://calm-centaur-bd9d0e.netlify.app/create"
 
 ]
     
@@ -83,6 +85,8 @@ async def pollcreation( poll: Poll = Body(...)):
         return JSONResponse(status_code=400, content=e)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
+
+# @app.post("/user/id", response_description  = "id user the ")
 
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
