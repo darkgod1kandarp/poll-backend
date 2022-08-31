@@ -86,10 +86,10 @@ async def pollcreation( poll: Poll = Body(...)):
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
     try:
-        
+        print('qwqwe')
         polling = jsonable_encoder(poll)
         
-            
+        print('wfwerfew')  
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
         if polldata['setenddate']:
             if datetime.now()>parser.parse(polldata['setenddate']) :
@@ -100,7 +100,7 @@ async def pollreply( poll: polling = Body(...)):
         macaddr = polling['macaddr']
         choice = polling['choices']
         votingrestiction = polldata['votingrestiction']
-
+        print('qwfewqf')
         Voting = vote.Vote(db)
 
         if not await Voting.check(votingrestiction, pollid, macaddr):

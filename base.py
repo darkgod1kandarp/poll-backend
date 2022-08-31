@@ -49,7 +49,7 @@ class PyObjectId(ObjectId):
 class polling(BaseModel):
     macaddr: str = Field(...)
     pollid: str = Field(...)
-    choices: List[Union[Dict[str, str], str]]
+    choices: List
 
     class Config:
         allow_population_by_field_name = True
