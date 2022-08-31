@@ -135,7 +135,7 @@ async def pollreply( poll: polling = Body(...)):
 
     except Exception as e:
        
-        return JSONResponse(status_code=400, content="not able to do vote ")
+        return JSONResponse(status_code=400, content=e)
     
 
     
