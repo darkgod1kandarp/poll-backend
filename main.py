@@ -62,7 +62,6 @@ async def pollcreation( poll: Poll = Body(...)):
             polldetail['imgtitle'] = url  
 
         if polldetail['pollType']=="multipleOption":
-            print(polldetail)
             new_poll = await db["poll"].insert_one(polldetail)
             created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
             options  ={i:{'count':0} for i in polldetail['options']}
