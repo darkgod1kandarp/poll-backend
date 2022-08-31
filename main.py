@@ -154,7 +154,7 @@ async def poll_detail(pollid:str):
 async def poll_results(pollid:str):
     result  = await db["results"].find_one({"pollid":pollid})
     poll_options  =result['options']
-    polltype =  await db["poll"].find_one({"_id":pollid})
+    polltype =  await db["poll"].find_one({"_id":pollid})['polltype']
     if not result:
         return JSONResponse(status_code=402, content="result for this pollid does not exist")
     
