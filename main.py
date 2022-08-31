@@ -61,7 +61,7 @@ async def pollcreation( poll: Poll = Body(...)):
             url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
             polldetail['imgtitle'] = url  
 
-        if polldetail['pollType']=="multipleOption":
+        if polldetail['polltype']=="multipleOption":
             new_poll = await db["poll"].insert_one(polldetail)
             created_poll = await db['poll'].find_one({"_id": new_poll.inserted_id})  
             options  ={i:{'count':0} for i in polldetail['options']}
