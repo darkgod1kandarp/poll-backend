@@ -30,7 +30,8 @@ cloudinary.config(
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://jovial-starlight-48bf83.netlify.app"
 
 ]
     
