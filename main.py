@@ -46,7 +46,11 @@ app.add_middleware(
 )
 
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
+
 db = client.poll_backend
+
+
+
 # async def browse_colletion():
 #     await db['browser_collection'].create_index("date", expireAfterSeconds=7200)
 
