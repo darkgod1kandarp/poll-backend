@@ -32,8 +32,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://jovial-starlight-48bf83.netlify.app",
-    "https://calm-centaur-bd9d0e.netlify.app"
+    "https://deluxe-dolphin-36d657.netlify.app/"
 
 ]
     
