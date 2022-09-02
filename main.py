@@ -59,12 +59,11 @@ db = client.poll_backend
 
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
+
     try:
         polldetail = jsonable_encoder(poll) 
      
-        # if  parser.parse(polldetail ['setenddate'])<=datetime.now() and polldetail ['setenddate']:
-        #     return JSONResponse(status_code=404, content='please provide date after current date')
-
+      
         if polldetail['imgtitle']:
             url  = cloudinary.uploader.upload(polldetail['imgtitle'])['url']
             polldetail['imgtitle'] = url  
@@ -80,13 +79,9 @@ async def pollcreation( poll: Poll = Body(...)):
             options = {val['text']:{'count':0, 'imageurl':val['image']}  for val in polldetail['imageoptions']}
        
         await db['results'].insert_one({'pollid': new_poll.inserted_id,'options':options })
-        # print(await db['users'].find_one({'macaddr':polldetail['macaddr'] }))
-        # if not await db['users'].find_one({'macaddr':polldetail['macaddr'] }):
-           
-        #     user_count  = db['users'].count()
-        #     print(user_count)
+       
     except Exception as e:
-      
+        
         return JSONResponse(status_code=400, content=e)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
@@ -166,6 +161,8 @@ async def poll_results(pollid:str):
     poll_options  =result['options']
     poll =  await db["poll"].find_one({"_id":pollid})
     polltype  =  poll['polltype']
+    polltitle  = poll['title']
+    polldescription = poll['description']
     if not result:
         return JSONResponse(status_code=402, content="result for this pollid does not exist")
     
@@ -179,7 +176,7 @@ async def poll_results(pollid:str):
         else:
             result_val.append({'text':val, 'count':poll_options[val]['count']})
 
-    return JSONResponse(status_code=200, content={'data':{"totalcount":total_votes , "result_val":result_val, "polltype":polltype}})
+    return JSONResponse(status_code=200, content={'data':{"totalcount":total_votes , "result_val":result_val, "polltype":polltype,"polltitle":polltitle , "polldescription":polldescription }})
 
 
 
