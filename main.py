@@ -17,6 +17,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from dateutil import parser
+import json
 load_dotenv()
 
 cloudinary.config( 
@@ -56,7 +57,15 @@ db = client.poll_backend
 # async def browse_colletion():
 #     await db['browser_collection'].create_index("date", expireAfterSeconds=7200)
 
-
+@app.post("/poll/latest/", response_description= "latest poll" , tags = ["poll"])
+async def latestpoll():
+    cursor, lenght1= db['poll'].find(), await db['poll'].count_documents({})
+    array1 = await cursor.to_list(lenght1)
+    result_list  = [{'_id':document['_id'], 'title':document['title'], 'description':document['description']}for document in array1[lenght1 - 5:]]
+    return JSONResponse(status_code  = 200, content =  result_list)
+    
+    
+    
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
 
@@ -97,6 +106,7 @@ async def pollreply( poll: polling = Body(...)):
         
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
         if polldata['setenddate']:
+            
             if datetime.now()>parser.parse(polldata['setenddate']) :
                 return JSONResponse(status_code=400, content="you can't vote right now")
 
