@@ -63,7 +63,19 @@ class polling(BaseModel):
             }
         }
 
-
+class PollReply(BaseModel):
+    id :Union[bool, str]  = False
+    
+    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "id":"wefewfewf"
+            }
+        }
 class Poll(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     title: str = Field(...)

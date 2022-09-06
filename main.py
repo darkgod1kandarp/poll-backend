@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import motor.motor_asyncio
 from dotenv import load_dotenv
-from base import  Poll, polling
+from base import  Poll, PollReply, polling
 from module import  vote
 import cloudinary
 import cloudinary.uploader
@@ -58,10 +58,11 @@ db = client.poll_backend
 #     await db['browser_collection'].create_index("date", expireAfterSeconds=7200)
 
 @app.post("/poll/latest/", response_description= "latest poll" , tags = ["poll"])
-async def latestpoll():
-    cursor, lenght1= db['poll'].find(), await db['poll'].count_documents({})
+async def latestpoll(pollreply:PollReply = Body(...)):
+    pollreply = jsonable_encoder(pollreply) 
+    cursor, lenght1= db['poll'].find({'_id':{"$ne":pollreply['id']}}),await db['poll'].count_documents({'_id':{"$ne":pollreply['id']}})
     array1 = await cursor.to_list(lenght1)
-    result_list  = [{'_id':document['_id'], 'title':document['title'], 'description':document['description']}for document in array1[lenght1 - 5:]]
+    result_list  = [{'_id':document['_id'] , 'title':document['title'], 'description':document['description']}for document in array1[lenght1 - 5:]]
     return JSONResponse(status_code  = 200, content =  result_list)
     
     
