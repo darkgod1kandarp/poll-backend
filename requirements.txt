@@ -18,3 +18,4 @@ starlette==0.19.1
 typing-extensions==4.3.0
 urllib3==1.26.12
 uvicorn==0.18.3
+pycryptodome==3.15.0

@@ -9,7 +9,7 @@ from fastapi.encoders import jsonable_encoder
 import motor.motor_asyncio
 from dotenv import load_dotenv
 from base import  Poll, PollReply, polling
-from module import  vote
+from module import  vote, decrypt
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -32,11 +32,8 @@ cloudinary.config(
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",
-    "https://deluxe-dolphin-36d657.netlify.app",
-    "https://www.bestkaun.com",
-    "https://bestkaun.com",
-    "https://bestkaun.netlify.app"
+   
+    "https://bestkaun.com"
 ]
     
 
@@ -65,7 +62,7 @@ async def latestpoll(pollreply:PollReply = Body(...)):
     result_list  = [{'_id':document['_id'] , 'title':document['title'], 'description':document['description']}for document in array1[lenght1 - 5:]]
     return JSONResponse(status_code  = 200, content =  result_list)
     
-    
+        
     
 @app.post("/poll/creation", response_description="user poll creation request", tags = ["poll"])
 async def pollcreation( poll: Poll = Body(...)):
@@ -103,7 +100,15 @@ async def pollreply( poll: polling = Body(...)):
     try:
    
         polling = jsonable_encoder(poll)
+        encryptval  = polling['encrypt']
+        decryptval = decrypt(encryptval)
+        data   =  json.loads(decryptval)
+        del polling['encrypt']
         
+    
+        
+        if data!= polling:
+            return JSONResponse(status_code=402, content="Invalid content")
         
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
         if polldata['setenddate']:
