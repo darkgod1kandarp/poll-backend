@@ -88,7 +88,7 @@ async def pollcreation( poll: Poll = Body(...)):
         await db['results'].insert_one({'pollid': new_poll.inserted_id,'options':options })
        
     except Exception as e:
-        
+        print(e)
         return JSONResponse(status_code=400, content=e)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
