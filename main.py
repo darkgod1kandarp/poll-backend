@@ -2,7 +2,7 @@ from datetime import datetime
 from itertools import count
 import os
 from sys import breakpointhook
-from urllib import response
+from urllib import request, response
 
 from fastapi import FastAPI, Body, HTTPException, status, Request
 from fastapi.responses import JSONResponse
@@ -97,7 +97,7 @@ async def pollcreation( poll: Poll = Body(...)):
 
 
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
-async def pollreply( poll: polling = Body(...)):
+async def pollreply( request: Request, poll: polling = Body(...)):
     try:
    
         polling = jsonable_encoder(poll)
@@ -119,15 +119,16 @@ async def pollreply( poll: polling = Body(...)):
 
 
         pollid = polling['pollid']
-        macaddr = polling['macaddr']
+        macaddr = polling['macaddr'] + "."+request.client.host
         choice = polling['choices']
         votingrestiction = polldata['votingrestiction']
         
         Voting = vote.Vote(db)
-
+  
         if not await Voting.check(votingrestiction, pollid, macaddr):
             return JSONResponse(status_code=400, content="you can't vote right now")
         
+     
         result  = await db['results'].find_one({'pollid':pollid})
         poll_options  =result['options']
         
@@ -156,7 +157,6 @@ async def pollreply( poll: polling = Body(...)):
         await db['results'].update_one({'pollid':pollid }, {"$set": {"options":poll_options}}, upsert=True)
 
     except Exception as e:
-       
         return JSONResponse(status_code=400, content=e)
     
 
