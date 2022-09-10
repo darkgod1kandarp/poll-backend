@@ -9,7 +9,7 @@ from fastapi.encoders import jsonable_encoder
 import motor.motor_asyncio
 from dotenv import load_dotenv
 from base import  Poll, PollReply, polling
-from .module import  vote, decrypt
+from module import  vote, decrypt
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
