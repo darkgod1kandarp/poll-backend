@@ -102,7 +102,7 @@ async def pollreply( poll: polling = Body(...)):
    
         polling = jsonable_encoder(poll)
         encryptval  = polling['key']
-        decryptval = decrypt(encryptval)
+        decryptval = decrypt.decrypt(encryptval)
         data   =  json.loads(decryptval)
         del polling['key']
         
