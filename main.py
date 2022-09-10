@@ -93,17 +93,17 @@ async def pollcreation( poll: Poll = Body(...)):
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_poll)
 
 
-# @app.post("/user/id", response_description  = "id user the ")
+
 
 @app.post("/poll/reply", response_description="user poll filling request", tags = ["poll"])
 async def pollreply( poll: polling = Body(...)):
     try:
    
         polling = jsonable_encoder(poll)
-        encryptval  = polling['encrypt']
+        encryptval  = polling['key']
         decryptval = decrypt(encryptval)
         data   =  json.loads(decryptval)
-        del polling['encrypt']
+        del polling['key']
         
     
         

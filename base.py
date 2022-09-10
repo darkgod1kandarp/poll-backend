@@ -50,6 +50,7 @@ class polling(BaseModel):
     macaddr: str = Field(...)
     pollid: str = Field(...)
     choices: List
+    key:str = Field(...)
 
     class Config:
         allow_population_by_field_name = True
@@ -59,7 +60,8 @@ class polling(BaseModel):
             "example": {
                 "macaddr": "wqwf",
                 "pollid": "630ca07331ad946501f83f9d",
-                "choices": ["not yet", "yes doing fine work"]
+                "choices": ["not yet", "yes doing fine work"], 
+                "key":"weefewf"
             }
         }
 
