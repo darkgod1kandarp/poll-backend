@@ -67,6 +67,7 @@ async def pollreply( poll: polling = Body(...)):
     poll_options  =result['options']
     
     if not result:
+        
         return JSONResponse(status_code=402, content="result for this pollid does not exist")
     
     for opt in choice:

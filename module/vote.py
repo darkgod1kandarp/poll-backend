@@ -25,6 +25,7 @@ class Vote:
         if votingrestiction=="One vote browser session":
             if  await self.db['browser_collection'].find_one({"macaddress":macaddr, "pollid":pollid}):
                 return False
+           
             await self.db['browser_collection'].insert_one({"macaddress":macaddr, "pollid":pollid, "date":datetime.datetime.utcnow()})
         if votingrestiction=="One vote per IP address":
             if await self.db['ip_collection'].find_one({ "pollid":pollid, "macaddress":macaddr}):

@@ -105,11 +105,13 @@ async def pollreply( request: Request, poll: polling = Body(...)):
         decryptval = decrypt.decrypt(encryptval)
         data   =  json.loads(decryptval)
         del polling['key']
+        del  polling['macaddr']
+        del data['macaddr']
         
-    
         
         if data!= polling:
-            return JSONResponse(status_code=402, content="Invalid content")
+    
+            return JSONResponse(status_code=400, content="Invalid content")
         
         polldata = await db['poll'].find_one({"_id": polling['pollid']})
         if polldata['setenddate']:
@@ -117,14 +119,14 @@ async def pollreply( request: Request, poll: polling = Body(...)):
             if datetime.now()>parser.parse(polldata['setenddate']) :
                 return JSONResponse(status_code=400, content="you can't vote right now")
 
-
-        pollid = polling['pollid']
-        macaddr = polling['macaddr'] + "."+request.client.host
-        choice = polling['choices']
-        votingrestiction = polldata['votingrestiction']
         
+        pollid = polling['pollid']
+        macaddr = request.client.host
+        choice = polling['choices']
+        
+        votingrestiction = polldata['votingrestiction']
+    
         Voting = vote.Vote(db)
-  
         if not await Voting.check(votingrestiction, pollid, macaddr):
             return JSONResponse(status_code=400, content="you can't vote right now")
         
@@ -133,7 +135,7 @@ async def pollreply( request: Request, poll: polling = Body(...)):
         poll_options  =result['options']
         
         if not result:
-            return JSONResponse(status_code=402, content="result for this pollid does not exist")
+            return JSONResponse(status_code=400, content="result for this pollid does not exist")
         
         result_val  = []
         total_votes  =  0
@@ -161,7 +163,6 @@ async def pollreply( request: Request, poll: polling = Body(...)):
     
 
     
-        
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"status":"vote accepted",'data':{'pollid':pollid,"totalcount":total_votes , "result_val":result_val}})
 
